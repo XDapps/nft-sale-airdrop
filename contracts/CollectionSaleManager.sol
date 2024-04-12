@@ -27,9 +27,10 @@ contract CollectionSaleManager is AccessControl {
 
     // ******************************************* Constructor ************************************************************************
     constructor(address _collectionAddress, address _disbursementAddy) AccessControl() {
+        require(_disbursementAddy != address(0), "Disbursement Address is invalid");
+        require(_collectionAddress != address(0), "Collection Address is invalid");
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         collectionAddress = _collectionAddress;
-        require(_disbursementAddy != address(0), "Disbursement Address is invalid");
         _disbursementAddress = _disbursementAddy;
     }
     // ******************************************* Modifiers ************************************************************************
@@ -61,7 +62,7 @@ contract CollectionSaleManager is AccessControl {
         _disbursementAddress = _disbursementAddy;
     }
     // ******************************************* Purchase Functions **************************************************************************
-    function buyToken() payable external returns (uint256) {
+    function buyToken() external payable returns (uint256) {
         require(priceEach > 0, "Sale is not active");
         ICollection collection = ICollection(collectionAddress);
         uint256 qtyRemaining = collection.remainingSupply();
