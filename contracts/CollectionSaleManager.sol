@@ -53,6 +53,7 @@ contract CollectionSaleManager is AccessControl {
     function activateSale(address _paymentToken, uint256 _priceEach) external MustBeAdmin {
         require(ICollection(collectionAddress).remainingSupply() > 0, "Collection is not setup");
         require(_priceEach > 0, "Price Each is invalid");
+        require(priceEach == 0, "Sale is already active");
         paymentToken = _paymentToken;
         priceEach = _priceEach;
         emit SaleActivated(collectionAddress, _paymentToken, priceEach);
