@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 //************ Collection Sale Manager *****************************/
 // This is a contract to manage the sale of NFT tokens in an ERC-721
@@ -28,7 +29,7 @@ contract CollectionSaleManager is AccessControl {
     // ******************************************* Constructor ************************************************************************
     constructor(address _collectionAddress, address _disbursementAddy) AccessControl() {
         require(_disbursementAddy != address(0), "Disbursement Address is invalid");
-        require(_collectionAddress != address(0), "Collection Address is invalid");
+        require(_isERC721Token(_collectionAddress), "Collection Address is not ERC721");
         _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
         collectionAddress = _collectionAddress;
         _disbursementAddress = _disbursementAddy;
@@ -85,5 +86,13 @@ contract CollectionSaleManager is AccessControl {
             require(erc20.allowance(_msgSender(), address(this)) >= priceEach, "Insufficient allowance");
             require(erc20.transferFrom(_msgSender(), _disbursementAddress, priceEach), "Payment failed");
         }
+    }
+
+    // ************************ Helpers Functions ****************************/
+
+    function _isERC721Token(address addressToCheck) private view returns (bool) {
+        bytes4 interfaceId = type(IERC721).interfaceId;
+        IERC721 tokenContract = IERC721(addressToCheck);
+        return tokenContract.supportsInterface(interfaceId);
     }
 }
